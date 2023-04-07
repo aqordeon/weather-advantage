@@ -22,9 +22,10 @@
 
         <!-- Main Content -->
         <div class="grid content-center">
-            <input class="place-self-center mt-12 w-96 py-4 px-6 rounded-lg overflow-hidden border-2 border-indigo-600" type="text" v-model="queryValue"
-                @keydown.enter="fetchWeather" placeholder="Insert city..">
-            <div class="text-center">{{ errorMessage }}</div>
+            <div class="font-extrabold text-6xl title text-center">WEATHER NATIONAL</div>
+            <input class="place-self-center mt-12 w-96 py-4 px-6 rounded-lg overflow-hidden border-2 border-indigo-600"
+                type="text" v-model="queryValue" @keydown.enter="fetchWeather" placeholder="Insert city..">
+            <div class="text-center italic text-red-500 my-2">{{ errorMessage }}</div>
         </div>
         <div v-if="weather.value != ''"
             class="border border-indigo-600 grid grid-cols-8 shadow-lg  text-white max-w-5xl place-self-center overflow-hidden rounded-2xl w-full h-11/12"
@@ -68,9 +69,9 @@
                     {{ currentTime() }}
                 </div>
 
-                <div class="bg-gray-100 px-6 py-2 rounded-full max-w-fit text-gray-900 font-semibold">
+                <a class="bg-gray-100 px-6 py-2 rounded-full max-w-fit text-gray-900 font-semibold">
                     See Details
-                </div>
+                </a>
             </div>
         </div>
 
@@ -107,20 +108,18 @@ const weather = reactive({
 const errorMessage = ref('')
 
 const fetchWeather = async () => {
-    try {
-        await fetch(`${baseURL}weather?q=${queryValue.value}&appid=${apiKey}`)
-            .then(res => {
-                console.log(res)
-                return res.json();
-            })
-            .then((res) => {
-                weather.value = res
-                errorMessage.value = 'Success'
-            })
-    } catch (error) {
-        alert(error)
-        errorMessage.value = "Place is not found."
-    }
+    await fetch(`${baseURL}weather?q=${queryValue.value}&appid=${apiKey}`)
+        .then(res => {
+            if (res.status == "404") {
+                errorMessage.value = "Place is not found."
+            }
+            return res.json();
+        })
+        .then((res) => {
+            console.log(res)
+            weather.value = res
+            errorMessage.value = ''
+        })
 }
 
 const currentTime = () => {
@@ -149,6 +148,13 @@ const dateBuilder = (value) => {
 <style>
 .bg-dots-darker {
     background-image: #161616;
+}
+
+.title {
+    @apply text-transparent bg-clip-text;
+    background-image: #7f00ff; /* fallback for old browsers */
+    background-image: -webkit-linear-gradient(to right top, #7f00ff, #e100ff); /* Chrome 10-25, Safari 5.1-6 */
+    background-image: linear-gradient( to right top, #7f00ff, #e100ff ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .clouds {
